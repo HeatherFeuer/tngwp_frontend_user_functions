@@ -1,6 +1,6 @@
 === TNG-WP Frontend User Functions ===
-Contributors: HeatherFeuer
-Tags: TNG, Integration, User Functions,
+Contributors: HeatherFeuer, Rick Malkin
+Tags: TNG, Integration, User Functions, Registration, Profile, Login
 Donate link: https://dev.uniquelyyourshosting.net/make-a-donation/
 Requires at least: 3.0
 Tested up to: 6.2
