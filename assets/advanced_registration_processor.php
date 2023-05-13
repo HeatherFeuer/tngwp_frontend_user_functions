@@ -2,8 +2,8 @@
 /************************************************
 Registration Form Handler for TNG Registration
 ************************************************/
-require('../../../../wp-load.php');
-global $wpdb;
+require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
+global $whom, $wpdb;
 
 if ((isset($_POST['submit']))) {
 	extract($_POST);
@@ -58,7 +58,7 @@ if ((isset($_POST['submit']))) {
 	$postalcode = stripslashes($_POST['postalcode']);
 	$country = stripslashes($_POST['country']);
 	$user_url = stripslashes($_POST['user_url']);
-	$user_login = stripslashes($_POST['userlogin']);
+	$user_login = stripslashes($_POST['user_login']);
 	$user_email = stripslashes($_POST['user_email']);
 	$email = stripslashes($_POST['confirm_email']);
 	$user_pass = stripslashes($_POST['user_pass']);
@@ -66,109 +66,252 @@ if ((isset($_POST['submit']))) {
 	$mbtng_tree = stripslashes($_POST['tree']);
 	$notes = stripslashes($_POST['notes']);
 	
-	// Process form for mailing
-	$sendto_email = get_option('admin_email');
-	$admin_mess = "Congratulations, TNG Admin! A new user joined your site!\n\n";
-	$date = date("m-d-y, h:m");
-	
-	// Person's information:
-	$info =
-		$real_name." has provided the following information:\n\n".
-		"My Full Name is ".$first_name." ".$last_name."\n".
-		"I was born on ".$birthdate." in ".$birthplace.".\n".
-		"My Address is:\n".
-		"     ".$address."\n     ".
-		$city.", ".$state_prov."  ".$postalcode." ".$country."\n\n".
-		"My phone number is ".$telephone." and my Email is ".$user_email."\n\n".
-		"My Username is: ".$user_login.".\n\n Full sentence of relationship: ".$relative." (".$personID.") is ".$whom." ".$relation.".";
-	$admin_mess .= $info;
-	
+	//Structure Emails to Admin and New User
+	$admin = get_bloginfo('admin_email');
+	$asubject = 'A new user has registered on '.get_bloginfo('name');
+	$usubject = 'Registration Information for '.get_bloginfo('name');
+	$headers = array('Content-Type: text/html;', 'charset=UTF-8');
+	$user = get_user_by( 'email', $admin );
+	$admin_name = $user->first_name;
+	$abody = '
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">Dear '.$admin_name.'</p>
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">'.$first_name.' '.$last_name.' has registered on '.get_bloginfo('name').'.
+		They have provided the following information:</p>';
+	$info = '	
+	  <table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Birthdate:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$birthdate.'</td>
+	  </tr>
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Birthplace:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$birthplace.'</td>
+	  </tr>
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Location:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$address.', '.$city.', '.$state_prov.', '.$country.'</td>
+	  </tr>
+		<tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Telephone:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$telephone.'</td>
+	  </tr>
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">User Name:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$user_login.'</td>
+	  </tr>
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Email:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$user_email.'</td>
+	  </tr>
+	  <tr>
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Relationship:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$relative.' ('.$personID.') is '.$whom.' '.$relation.'</td>
+	  </tr>
+	  </table>
+	 ';
+	$abody .= $info;
+
 	//If this is about a spouse
 	$wspouse = '';
 	if (($whom == "Spouse") || ($relation == "Spouse")) {
-		$wspouse = "\n\n".
-			"My Spouse's information is:\n".
-			"My Spouse's Name: ".$spouse_firstname." ".$spouse_lastname."\n".
-			"My Spouse's birthdate: ".$spouse_birthdate."\n".
-			"My Spouse's birthplace: ".$spouse_birthplace."\n".
-			"Our marriage date: ".$spouse_mar_date."\n";
-	} $admin_mess .= $wspouse;
-	
-	// this part deals with grandfather/grandmother
+		$wspouse = '		
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My spouse\'s information is:
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Spouse\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$spouse_firstname.' '.$spouse_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Spouse\'s Birthdate/Birthplace:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$spouse_birthdate.' at '.$spouse_birthplace.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Spouse\'s Marriage Date:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$spouse_mar_date.'</td>
+		</tr>
+		</table>
+		';
+	} $abody .= $wspouse;
+
+	// this part deals with grandfather/grandmother/sibling
 	$message = '';
 	if(($relation == "Grandmother") || ($relation == "Grandfather") || ($relation == "Sister") || ($relation == "Brother")){
-		$message = "\n\nFather's Name: ".$father_firstname." ".$father_lastname."\n".
-			"Father's Birthdate: ".$father_birthdate."\n".
-			"Mother's Name: ".$mother_firstname." ".$mother_maidenname."\n".
-			"Mother's Birthdate: ".$mother_birthdate."\n".
-			"Parent's Marriage Date: ".$parents_mar_date."\n\n";	
-	} $admin_mess .= $message;
+		$message = '
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\'s information is:
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Parent\'s Marriage Date:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$parents_mar_date.'</td>
+		</tr>
+		</table>
+		';
+	} $abody .= $message;
 	
 	// this part deals with sister or brother of mother/father
 	$message1 = '';
 	if(($relation == "FatherSister") || ($relation == "MotherSister") || ($relation == "FatherBrother") || ($relation == "MotherBrother")){
-		$message1 = "\n\nFather's Name: ".$father_firstname." ".$father_lastname."\n".
-			"Father's Birthdate: ".$father_birthdate."\n".
-			"Mother's Name: ".$mother_firstname." ".$mother_maidenname."\n".
-			"Mother's Birthdate: ".$mother_birthdate."\n".
-			"Parent's Marriage Date: ".$parents_mar_date."\n\n";
-	} $admin_mess .= $message1;
+		$message1 = '
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\s information is:
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Parent\'s Marriage Date:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$parents_mar_date.'</td>
+		</tr>
+		</table>
+		';
+	} $abody .= $message1;
 	
 	// this part deals with great grandfather/great grandmother
 	$message2 = '';
 	if (($relation == "GrGrandmother") || ($relation == "GrGrandfather")){
-		$message2 = "\n\n".
-			"Father's Name: ".$father_firstname." ".$father_lastname."\n".
-			"Father's Birthdate: ".$father_birthdate."\n".
-			"Mother's Name: ".$mother_firstname." ".$mother_maidenname."\n\n".
-			"Mother's Birthdate: ".$mother_birthdate."\n".
-			"Grandfather's Name: ".$grandfather_firstname." ".$grandfather_lastname."\n".
-			"Grandfather's Birthdate: ".$grandfather_birthdate."\n".
-			"Grandmother's Name: ".$grandmother_firstname." ".$grandmother_maidenname."\n".
-			"Grandmother's Birthdate: ".$grandmother_birthdate."\n";
-			"Grandparent's Marriage Date: ".$grandparents_mar_date."\n\n";
-	} $admin_mess .= $message2;
+		$message2 = '
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\'s information is:
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandfather_firstname.' '.$grandfather_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandather_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_firstname.' '.$grandmother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_birthdate.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandparent\'s Marriage Date:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandparents_mar_date.'</td>
+		</tr>
+		</table>
+		';
+	} $abody .= $message2;
 	
 	// this part deals with 2nd great grandfather/2nd great grandmother
 	$message3 = '';
 	if (($relation == "2ndGrGrandmother") || ($relation == "2ndGrGrandfather")){
-		$message3 = "\n\n".
-			"Father's Name: ".$father_firstname." ".$father_lastname."\n".
-			"Father's Birthdate: ".$father_birthdate."\n".
-			"Mother's Name: ".$mother_firstname." ".$mother_maidenname."\n".
-			"Mother's Birthdate: ".$mother_birthdate."\n".
-			"Parent's Marriage Date: ".$parents_mar_date."\n\n".
-			"Grandfather's Name: ".$grandfather_firstname." ".$grandfather_lastname."\n".
-			"Grandfather's Birthdate: ".$grandfather_birthdate."\n".
-			"Grandmother's Name: ".$grandmother_firstname." ".$grandmother_maidenname."\n".
-			"Grandmother's Birthdate: ".$grandmother_birthdate."\n".
-			"Grandparent's Marriage Date: ".$grandparents_mar_date."\n\n".
-			"Great Grandfather's Name: ".$gr_grandfather_firstname." ".$gr_grandfather_lastname."\n".
-			"Great Grandfather's Birthdate: ".$gr_grandfather_birthdate."\n".
-			"Great Grandmother's Name: ".$gr_grandmother_firstname." ".$gr_grandmother_maidenname."\n".
-			"Great Grandmother's Birthdate: ".$gr_grandmother_birthdate."\n".
-			"Great Grandparent's Marriage Date: ".$gr_grandparents_mar_date."\n\n";
-	} $admin_mess .= $message3;
+		$message3 = '
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\'s, grandparent\'s, and great grandparent\'s information is:
+		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandfather_firstname.' '.$grandfather_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandather_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_firstname.' '.$grandmother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandfather\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandfather_firstname.' '.$gr_grandfather_lastname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandfather\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandather_birthdate.'</td>
+		</tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandmother\'s Name:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandmother_firstname.' '.$gr_grandmother_maidenname.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandmother\'s Birthdate:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandmother_birthdate.'</td>
+		</tr>
+		<tr>
+		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandparent\'s Marriage Date:</th>
+		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandparents_mar_date.'</td>
+		</table>
+		';
+	} $abody .= $message3;
 	
-	//email new registration information to Admin
-	$senders_email = preg_replace("/[^a-zA-Z0-9s.@-]/", " ", $user_email);
-	$senders_name = preg_replace("/[^a-zA-Z0-9s]/", " ", $real_name);
-	$mail_subject = "New User Registration!";
-	$mailheaders = "From: $senders_name <$senders_email> \r\n";
-	$mail_message = $date."\n".	$admin_mess."\n";
-	mail( $sendto_email, $mail_subject, $mail_message, $mailheaders );
-	
-	$usermessage = "Hello ".$real_name.",\n\n
-	Your request for a user account has been received.\n\n
-	Your registered username and password are:\n
-	\t\t\t\t User Name: ".$user_login."\n
-	\t\t\t\t Password:  ".$user_pass."\n\n
-	Your account will remain inactive until it has been reviewed by the site administrator. You will be notified by email when your login is ready for use.\n\n
-	Thank you for registering with us!\n";
-	$mailheaders2 = "From: ".get_option('blogname')." <$sendto_email> \r\n";
-	$defa = "Registration Information for ".get_option('blogname');
-	//email message to new user
-	mail( $user_email, $defa, $usermessage, $mailheaders2 );
+	$ubody = '
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">Dear '.$first_name.'</p>
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">Your request for a user account has been received. Before you can begin to add your information to our family tree, your
+		account needs to be reviewed and activated. You will receive another email when that is done and then you will be able to 
+		log in with your username, '.$user_login.', and the password you created when you registered.</p>
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">Thank you for registering!</p>
+	  ';
+	 function tngwp_wp_mail_html() {
+		return 'text/html';
+	}
+	add_filter( 'wp_mail_content_type', 'tngwp_wp_mail_html' );
+	wp_mail( $admin, $asubject, $abody, $headers );
+	wp_mail( $user_email, $usubject, $ubody, $headers );
+	remove_filter( 'wp_mail_content_type', 'tngwp_wp_mail_html' );
 }
 
 $wpdb->query( $wpdb->prepare(
