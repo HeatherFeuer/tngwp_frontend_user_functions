@@ -2,54 +2,14 @@
 
 /**
  * The user interface and activation/deactivation methods for administering
- * the Object Oriented Plugin Template Solution plugin
- *
- * This plugin abstracts WordPress' Settings API to simplify the creation of
- * a settings admin interface.  Read the docblocks for the set_sections() and
- * set_fields() methods to learn how to create your own settings.
- *
- * A table is created in the activate() method and is dropped in the
- * deactivate() method.  If your plugin needs tables, adjust the table
- * definitions and removals as needed.  If you don't need a table, remove
- * those portions of the activate() and deactivate() methods.
- *
- * This plugin is coded to be installed in either a regular, single WordPress
- * installation or as a network plugin for multisite installations.  So, by
- * default, multisite networks can only activate this plugin via the
- * Network Admin panel.  If you want your plugin to be configurable for each
- * site in a multisite network, you must do the following:
- *
- * + Search admin.php and oop-plugin-template-solution.php
- *   for is_multisite() if statements.  Remove the true parts and leave
- *   the false parts.
- * + In oop-plugin-template-solution.php, go to the initialize() method
- *   and remove the $wpdb->get_blog_prefix(0) portion of the
- *   $this->table_login assignment.
- *
- * Beyond that, you're advised to leave the rest of this file alone.
- *
- * @package wp-tng_frontend_user_functions
- * @link http://wordpress.org/extend/plugins/wp-tng_frontend_user_functions/
- * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2
- * @author HeatherFeuerhelm <heather@uniquelyyourshosting.com>
- * @copyright Uniquely Yours Web Services, 2013
- *
- * This plugin used the Object-Oriented Plugin Template Solution as a skeleton
- * REPLACE_PLUGIN_URI
- */
-
-/**
- * The user interface and activation/deactivation methods for administering
  * the TNG-WP Frontend User Functions plugin
  *
  * @package tngwp_frontend_user_functions
  * @link http://wordpress.org/extend/plugins/wp-tng_frontend_user_functions/
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2
  * @author HeatherFeuerhelm <heather@uniquelyyourshosting.com>
- * @copyright Uniquely Yours Web Services, 2013
- *
- * This plugin used the Object-Oriented Plugin Template Solution as a skeleton
- * REPLACE_PLUGIN_URI
+ * @copyright Uniquely Yours Web Services, 2023
+ * Version 4.0
  */
 class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions {
 	/**
