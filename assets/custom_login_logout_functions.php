@@ -15,7 +15,6 @@ $post1 = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post
 $post2 = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_title = %s AND post_type='page'", $post_id2 ));
 $profile = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_title = %s AND post_type='page'", $profile_id ));
 $lost_password = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_title = %s AND post_type='page'", $lostpassword_id ));
-$reset_password = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_title = %s AND post_type='page'", $resetpassword_id ));
 
 function user_meta_login_form( $item ) {
 	global $tngusername, $wpdb, $post1, $post2, $profile, $lost_password;
