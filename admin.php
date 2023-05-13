@@ -9,6 +9,7 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2
  * @author HeatherFeuerhelm <heather@uniquelyyourshosting.com>
  * @copyright Uniquely Yours Web Services, 2023
+ * Version 4.0
  */
 class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions {
 	/**
