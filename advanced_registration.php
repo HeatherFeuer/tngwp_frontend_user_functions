@@ -14,7 +14,7 @@ function tngwp_advanced_registration() {
 	}
 
 	//Get the relevant row from the database
-	$select = "SELECT * FROM tng_people WHERE personID='$id'";
+	$select = "SELECT * FROM $people_table WHERE personID='$id'";
 	$query = mysqli_query($link, $select);
 	$result = mysqli_fetch_array($query);
 	$first = $result['firstname'];
@@ -654,7 +654,7 @@ function tngwp_advanced_registration() {
 	</table>
 	<br /><br />
 	<?php
-		$treeselect = "SELECT gedcom, treename FROM tng_trees ORDER BY treename";
+		$treeselect = "SELECT gedcom, treename FROM $trees_table ORDER BY treename";
 		$treequery = mysqli_query($link, $treeselect) or die ("Cannot execute query");
 		$treeresult = mysqli_fetch_array($treequery);
 		$tree = $treeresult['gedcom'];
