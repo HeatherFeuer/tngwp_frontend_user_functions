@@ -107,12 +107,19 @@ function tngwp_lost_password_form( $pwdreset ) {
 			
 		} else { //Display the form
 		?>
+			<script src="https://www.google.com/recaptcha/api.js"></script>
+			<script>
+				//Part of Google reCaptcha
+				function onSubmit(token) {
+					document.getElementById("submitbtn").submit();
+				}
+			</script>
 			<form class="user_form" id="wp_pass_reset" action="" method="post">
 				<p><label for="user_input">Please enter your user name or email:</label></p>
 				<p><input type="text" class="text" name="user_input" value="" /></p>
 				<input type="hidden" name="action" value="tngwp_pwd_reset" />
 				<input type="hidden" name="tngwp_pwd_nonce" value="'.wp_create_nonce("tngwp_pwd_nonce").'" />
-				<p><input type="submit" id="submitbtn" class="reset_password" name="submit" value="Reset Password" /></p>
+				<p><input type="submit" id="submitbtn" class="reset_password" class="g-recaptcha" data-sitekey="<?php echo $options['recaptcha_sitekey']; ?>" name="submit" value="Reset Password" /></p>
 			</form>
 			<div id="result"></div> <!-- To hold validation results -->
 					<div style="clear: both;"></div>
