@@ -66,9 +66,9 @@ function tngwp_processlogin() {
         array( '%d' )
     );
 
-    $newroot = ereg_replace( "/", "", $rootpath );
-    $newroot = ereg_replace( " ", "", $newroot );
-    $newroot = ereg_replace( "\.", "", $newroot );
+    $newroot = preg_replace( "/", "", $rootpath );
+    $newroot = preg_replace( " ", "", $newroot );
+    $newroot = preg_replace( "\.", "", $newroot );
     setcookie("tnguser_$newroot", $tng_user['username'], time()+31536000, "/");
     setcookie("tngpass_$newroot", $tng_user['password'], time()+31536000, "/");
     setcookie("tngpasstype_$newroot", $tng_user['password_type'], time()+31536000, "/");
