@@ -52,7 +52,7 @@ function tngwp_processlogin() {
 	include_once($tng_folder.'globallib.php');
     $tng_user = $wpdb->get_row("
                 SELECT * 
-                FROM tng_users 
+                FROM $users_table 
                 WHERE username = '$username'", 
                 ARRAY_A
             );
