@@ -123,7 +123,7 @@ function tngwp_simple_registration() {
 		   
 			// Update the text indicator
 			if(val !== "") {
-				text.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>" + "<span class='feedback'>" + result.feedback.warning + " " + result.feedback.suggestions + "</span"; 
+				text.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>" + "<span class='feedback'>" + result.feedback.warning + " " + result.feedback.suggestions + "</span>"; 
 			}
 			else {
 				text.innerHTML = "";
