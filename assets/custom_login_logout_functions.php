@@ -73,7 +73,7 @@ function user_meta_login_form( $item ) {
 					<input type="submit" name="wp-submit" id="' . esc_attr( $args['id_submit'] ) . '" class="button-primary" value="' . esc_attr( $args['label_log_in'] ) . '" tabindex="100" />
 					<input type="hidden" name="redirect_to" value="' . esc_url( $args['redirect'] ) . '" />
 				</p>
-				<p><a href="'.$lostpassword.'" title="Lost Password">Lost Password?</a>&nbsp;<!--|&nbsp;<a href="'.get_permalink($register).'">Click to Register</a>--></p>
+				<p><a href="'.$lostpassword.'" title="Lost Password">Lost Password?</a>&nbsp;|&nbsp;<a href="'.get_permalink($register).'">Click to Register</a></p>
 				' . apply_filters( 'login_form_bottom', '', $args ) . '
 			</form>';
 		return $form;
