@@ -382,7 +382,8 @@ function tng_user_meta_add_my_stylesheet() {
 add_action('wp_enqueue_scripts', 'tng_user_meta_scripts');
 function tng_user_meta_scripts() {
 	wp_enqueue_script('processAncestor', plugins_url('tngwp_frontend_user_functions/assets/js/processAncestor.js'), '', '1.0', true);
-	wp_enqueue_script('validate_registration', plugins_url('tngwp_frontend_user_functions/assets/js/validate_registration.js'), '', '1.0', true);
 	wp_enqueue_script('validate-inline', plugins_url('tngwp_frontend_user_functions/assets/js/jquery.valid8.js'), 'jquery', '1.3', true);
+	wp_enqueue_script('validate', plugins_url('tngwp_frontend_user_functions/assets/js/jquery.validate.js'), 'jquery', '1.9', true);
+	wp_enqueue_script('validate-language', plugins_url('tngwp_frontend_user_functions/assets/js/additional-methods.js'), 'jquery', '1.9', true);
 	wp_enqueue_script('metadata', plugins_url('tngwp_frontend_user_functions/assets/js/jquery.metadata.js'), 'jquery', '', true);
 }
