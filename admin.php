@@ -2,14 +2,54 @@
 
 /**
  * The user interface and activation/deactivation methods for administering
+ * the Object Oriented Plugin Template Solution plugin
+ *
+ * This plugin abstracts WordPress' Settings API to simplify the creation of
+ * a settings admin interface.  Read the docblocks for the set_sections() and
+ * set_fields() methods to learn how to create your own settings.
+ *
+ * A table is created in the activate() method and is dropped in the
+ * deactivate() method.  If your plugin needs tables, adjust the table
+ * definitions and removals as needed.  If you don't need a table, remove
+ * those portions of the activate() and deactivate() methods.
+ *
+ * This plugin is coded to be installed in either a regular, single WordPress
+ * installation or as a network plugin for multisite installations.  So, by
+ * default, multisite networks can only activate this plugin via the
+ * Network Admin panel.  If you want your plugin to be configurable for each
+ * site in a multisite network, you must do the following:
+ *
+ * + Search admin.php and oop-plugin-template-solution.php
+ *   for is_multisite() if statements.  Remove the true parts and leave
+ *   the false parts.
+ * + In oop-plugin-template-solution.php, go to the initialize() method
+ *   and remove the $wpdb->get_blog_prefix(0) portion of the
+ *   $this->table_login assignment.
+ *
+ * Beyond that, you're advised to leave the rest of this file alone.
+ *
+ * @package wp-tng_frontend_user_functions
+ * @link http://wordpress.org/extend/plugins/wp-tng_frontend_user_functions/
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2
+ * @author HeatherFeuerhelm <heather@uniquelyyourshosting.com>
+ * @copyright Uniquely Yours Web Services, 2013
+ *
+ * This plugin used the Object-Oriented Plugin Template Solution as a skeleton
+ * REPLACE_PLUGIN_URI
+ */
+
+/**
+ * The user interface and activation/deactivation methods for administering
  * the TNG-WP Frontend User Functions plugin
  *
  * @package tngwp_frontend_user_functions
  * @link http://wordpress.org/extend/plugins/wp-tng_frontend_user_functions/
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2
  * @author HeatherFeuerhelm <heather@uniquelyyourshosting.com>
- * @copyright Uniquely Yours Web Services, 2023
- * Version 4.0
+ * @copyright Uniquely Yours Web Services, 2013
+ *
+ * This plugin used the Object-Oriented Plugin Template Solution as a skeleton
+ * REPLACE_PLUGIN_URI
  */
 class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions {
 	/**
@@ -181,11 +221,11 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 	protected function set_sections() {
 		$this->sections = array(
 			'overview' => array(
-				'title' => __(" ", self::ID),
+				'title' => __("Overview", self::ID),
 				'callback' => 'section_overview',
 			),
 			'login' => array(
-				'title' => __("Login Policies", self::ID),
+				'title' => __("Login Functions", self::ID),
 				'callback' => 'section_login',
 			),
 			'mbtng_path' => array(
@@ -194,6 +234,10 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 			'registration' => array(
 				'title' => __("Custom User Registration", self::ID),
 				'callback' => 'section_registration',
+			),
+			'recaptcha' => array(
+				'title' => __("Google Recaptcha v3", self::ID),
+				'callback' => 'section_recaptcha',
 			),
 			'misc' => array(
 				'title' => __("Miscellaneous Policies", self::ID),
@@ -232,33 +276,56 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 			'track_logins' => array(
 				'section' => 'login',
 				'label' => __("Track Logins", self::ID),
-				'text' => __("Should the time of each user's login be stored?", self::ID),
+				'text' => __(" Should the time of each user's login be stored?", self::ID),
 				'type' => 'bool',
 				'bool0' => __("No, don't track logins.", self::ID),
 				'bool1' => __("Yes, track logins.", self::ID),
 			),
+			'login_page' => array(
+				'section' => 'login',
+				'label' => __("Show Login Page on:", self::ID),
+				'text' => __(" This is the page where you will put the Login shortcode.", self::ID),
+				'type' => 'select',
+			),
+			'lost_password_page' => array(
+				'section' => 'login',
+				'label' => __("Show Lost Password Page on:", self::ID),
+				'text' => __(" This is the page where you will put the Lost Password shortcode.", self::ID),
+				'type' => 'select',
+			),
 			'ancestor_lookup' => array(
 				'section' => 'registration',
 				'label' => __("Show Ancestor Select Form on:", self::ID),
-				'text' => __("If you are using the simple registration, select the same page the form will be on.", self::ID),
+				'text' => __(" If you are using the simple registration, select the same page the form will be on.", self::ID),
 				'type' => 'select',
 			),
 			'registration_form' => array(
 				'section' => 'registration',
 				'label' => __("Show Registration Form on:", self::ID),
-				'text' => __("This is the page that shows the actual form", self::ID),
+				'text' => __(" This is the page that shows the actual form", self::ID),
 				'type' => 'select',
 			),
 			'success_page' => array(
 				'section' => 'registration',
 				'label' => __("Landing page for registration success:", self::ID),
-				'text' => __("This is the page the user is redirected to after a successful registration.", self::ID),
+				'text' => __(" This is the page the user is redirected to after a successful registration.", self::ID),
 				'type' => 'select',
+			),
+			'profile_page' => array(
+				'section' => 'registration',
+				'label' => __("Show Profile Page on:", self::ID),
+				'text' => __(" This is the page for the front end profile shortcode.", self::ID),
+				'type' => 'select',
+			),
+			'recaptcha_sitekey' => array(
+				'section' => 'recaptcha',
+				'label' => __(" Recaptcha v3 Site Key:", self::ID),
+				'type' => 'string',
 			),
 			'deactivate_deletes_data' => array(
 				'section' => 'misc',
 				'label' => __("Deactivation", self::ID),
-				'text' => __("Should deactivating the plugin remove all of the plugin's data and settings?", self::ID),
+				'text' => __(" Should deactivating the plugin remove all of the plugin's data and settings?", self::ID),
 				'type' => 'bool',
 				'bool0' => __("No, preserve the data for future use.", self::ID),
 				'bool1' => __("Yes, please delete the data.", self::ID),
@@ -348,7 +415,7 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 			include_once ABSPATH . 'wp-admin/options-head.php';
 		}
 
-		echo '<h2>' . $this->hsc_utf8($this->text_settings) . '</h2>';
+		echo '<h1>' . $this->hsc_utf8($this->text_settings) . '</h1>';
 		echo '<form action="' . $this->hsc_utf8($this->form_action) . '" method="post">' . "\n";
 		settings_fields($this->option_name);
 		do_settings_sections(self::ID);
@@ -369,15 +436,23 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 	 */
 	public function section_overview() {
 		echo '<p>';
-		echo $this->hsc_utf8(__("This plugin is specifically designed to work as a user interface for Wordpress/TNG integrations. It provides shortcodes for registration, a front-end profile page, a login/logout shortcode, and a login/logout widget. The plugin also includes a built-in captcha for added security. ", self::ID));
+		echo $this->hsc_utf8(__("This plugin is specifically designed to work as a user interface for Wordpress/TNG integrations. 
+			It provides shortcodes for both a simple and adanced registration, a front-end profile page, lost and reset password pages, a login/logout shortcode, and a login/logout widget. ", self::ID));
 		echo '</p>';
 		echo '<h4>Frontend Profile</h4>';
 		echo '<p>';
-		echo $this->hsc_utf8(__("The shortcode [frontend_profile] replaces both the WordPress dashboard profile page and the TNG profile and displays it on a regular WordPress page. Create a page for the Front-End Profile and give it a title of your choice. Place the shortcode on the page. You don't have to make the page visible, but if you do and a user isn't logged in, they will be presented with the login form.", self::ID));
+		echo $this->hsc_utf8(__("The shortcode [tngwp_frontend_profile] replaces both the WordPress dashboard profile page and the TNG profile and displays it 
+			on a regular WordPress page. Create a page for the Front End Profile and give it a title of your choice. Place the shortcode on the page. You don't have 
+			to make the page visible, but if you do and a user isn't logged in, they will be presented with the login form.", self::ID));
 		echo '</p>';
 		echo '<h4>Login / Logout</h4>';
 		echo '<p>';
-		echo $this->hsc_utf8(__("SIDEBAR WIDGET: A widget has been added under Appearance --> Widgets called “User Login / Logout”. Simply add it to any sidebar. If a user isn't logged in, it will display the log in form. If a user is logged in, it will display a welcome message, link to the profile page and link to log out. If the user is an Admin, the profile link is replaced by the link to the Dashboard.", self::ID));
+		echo $this->hsc_utf8(__("SIDEBAR WIDGET: A widget has been added under Appearance --> Widgets called “TNG User Login/Logout”. Simply add it to any sidebar. 
+			If a user isn't logged in, it will display the log in form. If a user is logged in, it will display a welcome message, link to the profile page and 
+			link to log out. If the user is an Admin, the profile link is replaced by the link to the Dashboard.", self::ID));
+		echo '<br />';
+		echo $this->hsc_utf8(__("Additionally, you can use the shortcode [tngwp_login_logout] on a custom login page or any other page where you would like the 
+			login form to be displayed.", self::ID));
 		echo '</p>';
 	}
 	
@@ -386,8 +461,15 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 	 * @return void
 	 */
 	public function section_login() {
+		echo '<h4>Track Logins</h4>';
 		echo '<p>';
-		echo $this->hsc_utf8(__("This option, if set to yes, will email the site admin the time and name of a user whenever that user logs in to the site. If you have a very active site, you may wish to set this to no to keep your inbox from being cluttered.", self::ID));
+		echo $this->hsc_utf8(__("This option, if set to yes, will email the site admin the time and name of a user whenever that user logs in to the site. 
+			If you have a very active site, you may wish to set this to no to keep your inbox from being cluttered.", self::ID));
+		echo '</p>';
+		echo '<h4>Lost Password Functions</h4>';
+		echo '<p>';
+		echo $this->hsc_utf8(__("The “Lost Password” link in the Login/Logout widget and shortcode sends the user to a custom Lost Password page that has the form
+			to reset their password. Place the shortcode [tngwp_forgot_pwd_form] on that page. The user will be sent a new temporary password to log in with.", self::ID));
 		echo '</p>';
 	}
 	
@@ -420,7 +502,10 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 	public function section_registration() {
 		echo '<h4>Advanced Registration</h4>';
 		echo '<p>';
-		echo $this->hsc_utf8(__("There are two shortcodes provided: [lookup_ancestor] to search for the closest relative (including self) and [advanced_registration_form] that is the actual registration form. Create a WordPress page with your registration instructions. After the instructions, simply add the [lookup_ancestor] shortcode and set the page in the form below. Create a second page to hold the registration form. On that page add the shortcode [advanced_registration_form]. Be sure to come back here and set the page in the form below.", self::ID));
+		echo $this->hsc_utf8(__("There are two shortcodes provided: [lookup_ancestor] to search for the closest relative (including self) and [advanced_registration_form]
+			that is the actual registration form. Create a WordPress page with your registration instructions. After the instructions, simply add the 
+			[lookup_ancestor] shortcode and set the page in the form below. Create a second page to hold the registration form. On that page add the shortcode 
+			[advanced_registration_form]. Be sure to come back here and set the page in the form below.", self::ID));
 		echo '</p>';
 		echo '<h4>Simple Registration</h4>';
 		echo '<p>';
@@ -428,6 +513,16 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 		echo '</p>';
 		echo '<p>';
 		echo $this->hsc_utf8(__("Select the pages below to display the registration form(s) and the successful landing.", self::ID));
+		echo '</p>';
+	}
+	
+	/**
+	 * The callback for rendering the "Google Recaptcha v3" section description
+	 * @return void
+	 */
+	public function section_recaptcha() {
+		echo '<p>';
+		echo $this->hsc_utf8(__("Form validation for both registration forms is now done using Google's Recaptcha v3. If you don't already have one, you can get one by starting here: https://developers.google.com/recaptcha and following the instructions. Once you have the keys, enter your SITE key here.", self::ID));
 		echo '</p>';
 	}
 
@@ -500,14 +595,14 @@ class tngwp_frontend_user_functions_admin extends tngwp_frontend_user_functions 
 	 * @return void
 	 */
 	protected function input_string($name) {
-		echo '<input type="text" size="25" name="'
+		echo '<input type="text" size="50" name="'
 			. $this->hsc_utf8($this->option_name)
 			. '[' . $this->hsc_utf8($name) . ']"'
 			. ' value="' . $this->hsc_utf8($this->options[$name]) . '" /> ';
 		echo '<br />';
-		echo $this->hsc_utf8($this->fields[$name]['text']
+		/*echo $this->hsc_utf8($this->fields[$name]['text']
 				. ' ' . __('Default:', self::ID) . ' '
-				. $this->options_default[$name] . '.');
+				. $this->options_default[$name] . '.');*/
 	}
 	
 		/**
