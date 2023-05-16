@@ -32,7 +32,7 @@ add_action( 'wp_logout', 'tngwp_session_destroy', 3 );
 function tngwp_processlogin() {
     global $wpdb, $current_user, $tng_path;
 	$tng_path = get_option('mbtng_path');
-    get_currentuserinfo();
+    wp_get_current_user();
     $username = $current_user->user_login;
     $tng_folder = $tng_path;
     include($tng_folder.'config.php');
