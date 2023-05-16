@@ -301,6 +301,7 @@ function tngwp_advanced_registration() {
 					required: "please fill"
 				}
 			});
+		});
     </script>
 	<script type="text/javascript">	
 		jQuery(document).ready(function(){
