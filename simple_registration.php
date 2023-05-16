@@ -1,9 +1,9 @@
 <?php
 function tngwp_simple_registration() {
 //	session_start();
-	include('/assets/css/style.css');
 	ob_start();
 	?>
+	<script src="/assets/js/validate_registration.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
 	<script language="javascript">
 	//<!---------------------------------+
