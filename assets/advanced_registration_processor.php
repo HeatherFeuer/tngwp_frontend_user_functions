@@ -5,55 +5,13 @@ Registration Form Handler for TNG Registration
 require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 //function to process form data
-//function tngwp_process_advanced_registration() {
+function tngwp_process_simple_registration() {
 	global $wpdb;
-	extract($_POST);
+	//Extract form data
+	extract($_POST); 
 	//Grab the posted variables
-	$relative = stripslashes($_POST['relative']);
-	$relation = stripslashes($_POST['relation']);
-	$whom = $_POST['whom'];
-	$personID = $_POST['newid'];
-	
-	//parents
-	$father_firstname = stripslashes($_POST['father_firstname']);
-	$father_lastname = stripslashes($_POST['father_lastname']);
-	$father_birthdate = stripslashes($_POST['father_birthdate']);
-	$mother_firstname = stripslashes($_POST['mother_firstname']);
-	$mother_maidenname = stripslashes($_POST['mother_maidenname']);
-	$mother_birthdate = stripslashes($_POST['mother_birthdate']);
-	$parents_mar_date = stripslashes($_POST['parents_mar_date']);
-	//grandparents
-	$grandfather_firstname = stripslashes($_POST['grandfather_firstname']);
-	$grandfather_lastname = stripslashes($_POST['grandfather_lastname']);
-	$grandfather_birthdate = stripslashes($_POST['grandfather_birthdate']);
-	$grandmother_firstname = stripslashes($_POST['grandmother_firstname']);
-	$grandmother_maidenname = stripslashes( $_POST['grandmother_maidenname']);
-	$grandmother_birthdate = stripslashes($_POST['grandmother_birthdate']);
-	$grandparents_mar_date = stripslashes($_POST['grandparents_mar_date']);
-	//great-grandparents
-	$gr_grandfather_firstname = stripslashes($_POST['gr_grandfather_firstname']);
-	$gr_grandfather_lastname = stripslashes($_POST['gr_grandfather_lastname']);
-	$gr_grandfather_birthdate = stripslashes($_POST['gr_grandfather_birthdate']);
-	$gr_grandmother_firstname = stripslashes($_POST['gr_grandmother_firstname']);
-	$gr_grandmother_maidenname = stripslashes($_POST['gr_grandmother_maidenname']);
-	$gr_grandmother_birthdate = stripslashes($_POST['gr_grandmother_birthdate']);
-	$gr_grandparents_mar_date = stripslashes($_POST['gr_grandparents_mar_date']);
-	
-	//Spouse
-	$spouse_firstname = stripslashes($_POST['spouse_firstname']);
-	$spouse_lastname = stripslashes($_POST['spouse_lastname']);
-	$spouse_birthdate = stripslashes($_POST['spouse_birthdate']);
-	$spouse_birthplace = stripslashes($_POST['spouse_birthplace']);
-	$spouse_mar_date = stripslashes($_POST['spouse_mar_date']);
-	
-	//self
-	$first_name =  stripslashes($_POST['first_name']);
+	$first_name = stripslashes($_POST['first_name']);
 	$last_name = stripslashes($_POST['last_name']);
-	$real_name = $first_name." ".$last_name;
-	$birthdate = stripslashes($_POST['birthdate']);
-	$birthplace = stripslashes($_POST['birthplace']);
-	$telephone = stripslashes($_POST['telephone']);
-	$address = stripslashes($_POST['address']);
 	$city = stripslashes($_POST['city']);
 	$state_prov = stripslashes($_POST['state_prov']);
 	$postalcode = stripslashes($_POST['postalcode']);
@@ -62,11 +20,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 	$user_login = stripslashes($_POST['user_login']);
 	$user_email = stripslashes($_POST['user_email']);
 	$email = stripslashes($_POST['confirm_email']);
-	$user_pass = stripslashes($_POST['user_pass']);
+	$user_pass = stripslashes($_POST['password']);
 	$pass = md5($user_pass);
 	$mbtng_tree = stripslashes($_POST['tree']);
-	$notes = stripslashes($_POST['notes']);
-	
+	$interest = stripslashes($_POST['interest']);
+	$relationship = stripslashes($_POST['relationship']);
+	$comments = stripslashes($_POST['comments']);
 	//Structure Emails to Admin and New User
 	$admin = get_bloginfo('admin_email');
 	$asubject = 'A new user has registered on '.get_bloginfo('name');
@@ -75,24 +34,19 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 	$abody = '
 	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">Dear '.$admin_name.'</p>
 	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">'.$first_name.' '.$last_name.' has registered on '.get_bloginfo('name').'.
-		They have provided the following information:</p>';
-	$info = '	
+		They have provided the following information:
 	  <table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
 	  <tr>
-		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Birthdate:</th>
-		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$birthdate.'</td>
-	  </tr>
-	  <tr>
-		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Birthplace:</th>
-		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$birthplace.'</td>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Email:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$email.'</td>
 	  </tr>
 	  <tr>
 		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Location:</th>
-		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$address.', '.$city.', '.$state_prov.', '.$country.'</td>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$city.', '.$state_prov.', '.$country.'</td>
 	  </tr>
 		<tr>
-		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Telephone:</th>
-		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$telephone.'</td>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Website:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$user_url.'</td>
 	  </tr>
 	  <tr>
 		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">User Name:</th>
@@ -103,219 +57,21 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$user_email.'</td>
 	  </tr>
 	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Tree:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mbtng_tree.'</td>
+	  </tr>
+	  <tr>
+		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Interest:</th>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$interest.'</td>
+	  </tr>
 	  <tr>
 		<th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Relationship:</th>
-		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$relative.' ('.$personID.') is '.$whom.' '.$relation.'</td>
+		<td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$relationship.'</td>
 	  </tr>
 	  </table>
-	 ';
-	
-	//If this is about a spouse
-	$wspouse = '';
-	if (($whom == "Spouse") || ($relation == "Spouse")) {
-		$wspouse = '		
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My spouse\'s information is:
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Spouse\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$spouse_firstname.' '.$spouse_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Spouse\'s Birthdate/Birthplace:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$spouse_birthdate.' at '.$spouse_birthplace.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Spouse\'s Marriage Date:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$spouse_mar_date.'</td>
-		</tr>
-		</table>
-		';
-	}
-	
-	// this part deals with grandfather/grandmother/sibling
-	$message = '';
-	if(($relation == "Grandmother") || ($relation == "Grandfather") || ($relation == "Sister") || ($relation == "Brother")){
-		$message = '
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\'s information is:
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Parent\'s Marriage Date:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$parents_mar_date.'</td>
-		</tr>
-		</table>
-		';
-	}
-	
-	// this part deals with sister or brother of mother/father
-	$message1 = '';
-	if(($relation == "FatherSister") || ($relation == "MotherSister") || ($relation == "FatherBrother") || ($relation == "MotherBrother")){
-		$message1 = '
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\s information is:
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Parent\'s Marriage Date:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$parents_mar_date.'</td>
-		</tr>
-		</table>
-		';
-	}
-	
-	// this part deals with great grandfather/great grandmother
-	$message2 = '';
-	if (($relation == "GrGrandmother") || ($relation == "GrGrandfather")){
-		$message2 = '
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\'s information is:
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandfather_firstname.' '.$grandfather_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandather_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_firstname.' '.$grandmother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_birthdate.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandparent\'s Marriage Date:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandparents_mar_date.'</td>
-		</tr>
-		</table>
-		';
-	}
-	
-	// this part deals with 2nd great grandfather/2nd great grandmother
-	$message3 = '';
-	if (($relation == "2ndGrGrandmother") || ($relation == "2ndGrGrandfather")){
-		$message3 = '
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">My parent\'s, grandparent\'s, and great grandparent\'s information is:
-		<table style="width:100%; border-collapse: collapse; font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_firstname.' '.$father_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Father\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$father_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_firstname.' '.$mother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Mother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$mother_birthdate.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandfather_firstname.' '.$grandfather_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandfather\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandfather_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_firstname.' '.$grandmother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Grandmother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$grandmother_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandfather\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandfather_firstname.' '.$gr_grandfather_lastname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandfather\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandfather_birthdate.'</td>
-		</tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandmother\'s Name:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandmother_firstname.' '.$gr_grandmother_maidenname.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandmother\'s Birthdate:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandmother_birthdate.'</td>
-		</tr>
-		<tr>
-		  <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;">Great Grandparent\'s Marriage Date:</th>
-		  <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">'.$gr_grandparents_mar_date.'</td>
-		</table>
-		';
-	}
-	
-	$message_end = '
-		<p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">The WordPress System</p>
-		<br />
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem; font-weight: bold;">Comments:</p>
+	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">'.$comments.'</p>
 	';
-	
-	$admin_message .= $abody;
-	$admin_message .= $info;
-	$admin_message .= $wspouse;
-	$admin_message .= $message;
-	$admin_message .= $message1;
-	$admin_message .= $message2;
-	$admin_message .= $message3;
-	$admin_message .= $message_end;
-	
-	$urlparts = wp_parse_url(home_url());
-	$domain = $urlparts['host'];
-	$afrom = 'wordpress@'.$domain;
-	$aheaders[] = 'Content-Type: text/html; charset=UTF-8';
-	$aheaders[] = 'From: '.$admin;
-	mail($admin, $asubject, $admin_message, implode("\r\n", $aheaders));
 	
 	$usubject = 'Registration Information for '.get_bloginfo('name');
 	$ubody = '
@@ -324,11 +80,16 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 		account needs to be reviewed and activated. You will receive another email when that is done and then you will be able to 
 		log in with your username, '.$user_login.', and the password you created when you registered.</p>
 	  <p style="font-family: Helvetica, Tahoma, sans-serif; font-size: 1.05rem;">Thank you for registering!</p>
-	';
-
-	$uheaders = array('Content-Type: text/html; charset=UTF-8');
+	  ';
+	
+	$urlparts = wp_parse_url(home_url());
+	$domain = $urlparts['host'];
+	$afrom = 'wordpress@'.$domain;
+	$aheaders[] = 'Content-Type: text/html; charset=UTF-8';
+	$aheaders[] = 'From: '.$admin;
 	$uheaders[] = 'Content-Type: text/html; charset=UTF-8';
 	$uheaders[] = 'From: '.$admin;
+	mail($admin, $asubject, $abody, implode("\r\n", $aheaders));
 	mail($user_email, $usubject, $ubody, implode("\r\n", $uheaders));
 	
 	//Process user
@@ -336,7 +97,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 	$date = date("m-d-y, h:m");
 	$real_name = $first_name." ".$last_name;
 	$wpdb->query( $wpdb->prepare(
-		"INSERT INTO $users_table (description, username, password, password_type, role, allow_living, realname, email, dt_registered) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s )",
+		"INSERT INTO tng_users (description, username, password, password_type, role, allow_living, realname, email, dt_registered) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s )",
 		array(
 			'member',
 			$user_login,
@@ -361,8 +122,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 		'nickname' => $first_name.' '.$last_name,
 		'first_name' => $first_name,
 		'last_name' => $last_name,
-		'telephone' => $telephone,
-		'address' => $address,
 		'city' => $city,
 		'state_prov' => $state_prov,
 		'postalcode' => $postalcode,
@@ -371,7 +130,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 		'rich_editing' => 1,
 		'show_admin_bar_front' => 0
 	);
-	$new_user_id = tng_meta_insert_user($userdata);
 
 	//my function to create new WordPress user
 	function tng_meta_insert_user($userdata) {
@@ -485,8 +243,8 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 			if ( isset( $$key ) )
 				update_user_meta( $user_id, $key, $$key );
 		}
-/*
-		foreach(get_user_address_profile_list() as $key => $value) {
+
+/*		foreach(get_user_address_profile_list() as $key => $value) {
 		update_user_meta( $user_id, $key, $_POST[$key] );
 		}
 */
@@ -506,14 +264,14 @@ require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 		return $user_id;
 		$wpdb->flush();
 	}
-	
+
 	$new_user_id = tng_meta_insert_user( wp_slash( $userdata ) );
-	
+
 	//send user to success page
 		$host  = $_SERVER['HTTP_HOST'];
 		$options = get_option('tngwp-frontend-user-functions-options');
 		$page = $options['success_page'];
 		$permalink = get_permalink( get_page_by_title( $page ) );
 		wp_redirect( $permalink );
-//}
+}
 ?>
