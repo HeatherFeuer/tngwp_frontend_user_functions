@@ -1,9 +1,7 @@
 <?php
 function tngwp_simple_registration() {
-//	session_start();
 	ob_start();
 	?>
-	<script src="/assets/js/validate_registration.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
 	<script language="javascript">
 	//<!---------------------------------+
@@ -22,18 +20,20 @@ function tngwp_simple_registration() {
 			jQuery('#tick').hide(); jQuery('#cross').hide();
 			jQuery("#msgbox").css({'border': '1px #ffc solid','color': '#c93'}).text('Checking...').fadeIn('fast');
 			//check the username exists or not from ajax
-			jQuery.post(root+'/wp-content/plugins/tngwp_frontend_user_functions/assets/user_availability.php',{ user_login:jQuery(this).val() } ,function(data)
-			{
+			jQuery.post(root+'/wp-content/plugins/tngwp_frontend_user_functions/assets/user_availability.php', { user_login: jQuery(this).val() }, function(data) {
 			  if(data=='no') //if username not avaiable
 			  {
-				if(jQuery('#user_login').hasClass('valid')) { jQuery('#user_login').removeClass('valid').css({'border':'1px solid #800','color':'#800','font-weight':'bold'}); }
+				if(jQuery('#user_login').hasClass('valid')) { 
+					jQuery('#user_login').removeClass('valid').css({'border':'1px solid #800!important','color':'#800!important','font-weight':'bold'});
+				}
 				jQuery('#tick').hide();
 				jQuery('#cross').css('display', 'inline').fadeIn('fast');
 				jQuery("#msgbox").fadeTo(500,0.1,function() //start fading the messagebox
 				{ 
 				  //add message and change the class of the box and start fading
-				  jQuery(this).html('User name exists or not provided').css({'color': '#800','font-weight': 'bold'}).fadeTo(500,1);
-				});		
+				  jQuery(this).html('User name exists or is not provided').css({'color': '#800','font-weight': 'bold'}).fadeTo(500,1);
+				});
+			  localStorage.setItem("data",data);	
 			  }
 			  else
 			  {
@@ -71,7 +71,7 @@ function tngwp_simple_registration() {
 			//check the user email exists or not from ajax
 			jQuery.post(root+'/wp-content/plugins/tngwp_frontend_user_functions/assets/email_availability.php',{ user_email:jQuery(this).val() } ,function(data)
 			{
-			  if(data=='no') //if user email not avaiable or not provided
+			  if(data=='no') //if user email not available or not provided
 			  {
 				if(jQuery('#user_email').hasClass('valid')) { jQuery('#user_email').removeClass('valid').css({'border':'1px solid #800','color':'#800','font-weight':'bold'}); }
 				jQuery('#tick2').hide();
@@ -79,7 +79,7 @@ function tngwp_simple_registration() {
 				jQuery("#msgbox2").fadeTo(500,0.1,function() //start fading the messagebox
 				{ 
 				  //add message and change the class of the box and start fading
-				  jQuery(this).html('Email not provided OR this email already exists. If this is your email, please login and update your information on your profile page.').css({'color': '#800','font-weight': 'bold'}).fadeTo(500,1);
+				  jQuery(this).html('Email is missing/invalid OR this email already exists. If this is your email, please login and update your information on your profile page.').css({'color': '#800','font-weight': 'bold'}).fadeTo(500,1);
 				});		
 			  }
 			  else
@@ -123,14 +123,14 @@ function tngwp_simple_registration() {
 		   
 			// Update the text indicator
 			if(val !== "") {
-				text.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>" + "<span class='feedback'>" + result.feedback.warning + " " + result.feedback.suggestions + "</span>"; 
+				text.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>" + "<span class='feedback'>" + result.feedback.warning + "</span"; 
 			}
 			else {
 				text.innerHTML = "";
 			}
 		});
 	</script>
-	 <script src="https://www.google.com/recaptcha/api.js"></script>
+	 <script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
 	<script>
 		//Part of Google reCaptcha
 		function onSubmit(token) {
@@ -273,8 +273,8 @@ function tngwp_simple_registration() {
 				</g>
 			</svg>
 			<div class="error-message"></div>
-			<img id="tick" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/tick.png" width="16" height="16"/>
-			<img id="cross" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/cross.png" width="16" height="16"/><span id="msgbox"></span>
+			<img id="tick" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/tick.png" width="24" height="24"/>
+			<img id="cross" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/cross.png" width="24" height="24"/><span id="msgbox"></span>
 			<p class="field-message">Usernames cannot begin with a number and should not contain any punctuation characters (no . , : ; ' " ! \ / [ ] { } + - )</p>
 		</div> <!-- End Login Field -->
 		
@@ -295,9 +295,8 @@ function tngwp_simple_registration() {
 				</g>
 			</svg>
 			<div class="error-message"></div>
-			<img id="tick2" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/tick.png" width="16" height="16"/>
-			<img id="cross2" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/cross.png" width="16" height="16"/><span id="msgbox2"></span>
-			<div class="field-message" style="clear:both;">Please make sure you are not blocking mail from the this domain to ensure email from us does not end up in a spam or junk folder.</div>
+			<img id="tick2" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/tick.png" width="24" height="24"/>
+			<img id="cross2" src="<?php bloginfo('wpurl') ?>/wp-content/plugins/tngwp_frontend_user_functions/assets/images/cross.png" width="24" height="24"/><span id="msgbox2"></span>
 		</div> <!-- End User Email Field -->
 		
 		<!-- Confirm Email Field (required) -->
@@ -317,13 +316,16 @@ function tngwp_simple_registration() {
 				</g>
 			</svg>
 			<div class="error-message"></div>
+			<div class="field-message" style="clear:both;">Please make sure you are not blocking mail from the this domain to ensure email from us does not end up in a spam or junk folder.</div>
 		</div> <!-- End Confirm Email Field -->
 		
 		<!-- Password Field (required) -->
 		<div class="fieldgroup">
 			<label class="label required" for"user_email">Password:  </label>
-			<input type="password" id="password" name="password" class="input" />
-			<svg class="icon icon-success hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+			<input type="password" id="password" name="password" class="input" /><br >
+			<meter max="4" id="password-strength-meter"></meter><div id="password-strength-text"></div>
+			<div style="display:table-cell;">
+			<svg class="icon icon-success hidden" xmlns="http://www.w3.org/2000/svg" width="0" height="0" viewBox="0 0 24 24">
 				<title>check-circle</title>
 				<g fill="none">
 					<path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -337,9 +339,8 @@ function tngwp_simple_registration() {
 			</svg>
 			<div class="error-message"></div>
 			<div class="field-message">
-				<meter max="4" id="password-strength-meter"></meter>
-				<div id="password-strength-text"></div>
-				Passwords must be between 12 and 20 characters and include Upper Case letters, lower case letters, 1-3 numbers, and 1-2 of these symbols: !@%$? 
+				Passwords must be between 12 and 20 characters and include Upper Case letters, lower case letters, 1-3 numbers, and 1-2 of these symbols: !@%$?
+			</div>
 			</div>
 		</div> <!-- End Password Field -->
 		
