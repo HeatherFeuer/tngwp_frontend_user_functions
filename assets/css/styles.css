@@ -16,29 +16,134 @@ display: none;
 #self p {
   font-weight: bold;
 }
+
+#register form {
+	box-sizing: border-box;
+}
+
 #register fieldset {
-	width: 100%;
+  padding: 1.5em;
+  border: 1px solid #C63800;
+}
+#register .fieldgroup {
+  display: table;
+  width: 100%;
+  padding: 1em;
+  border: 1px solid #5300ad;
+  margin: 1% 0;
+  position: relative;
 }
 
-#register legend {
+#register label,
+.log_user label {
+  display: table-cell;
   font-weight: bold;
-  font-style: italic;
-  font-size: 1.1em;
+  width: 20rem;
 }
 
-#register table {
-	width: 100%;
-}
-#register td {
-	width: auto;
+#register label.additionalinfo { width: 100%!important; }
+
+#register input,
+.log_user input {
+  border-radius: 0.25rem;
+  padding: 0.45em;
+  border: 1px solid #5300ad;
 }
 
-#register td.input {
-	width: 20%;
+#register .input {
+  display: table-cell;
+  width: 15rem;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+	
+#register .input-error {
+  display: inline;
+  width: auto;
 }
 
-#register td.label {
-	width: 100px;
+#register .input.input-error {
+  display: inline;
+  border: 1px solid red!important;
+  width: 15rem;
+}
+
+#register input.input-error {
+  border: 1px solid red!important;
+  color: red;
+}
+
+#register .input.success {
+  border: 1px solid green;
+  color: green;
+}
+
+#register .input:focus {
+  outline: none;
+  border: 2px solid Thistle;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+  background-clip: padding-box;
+}
+
+#register .error-message {
+	display: inline;
+	color: red;
+	font-style: italic;
+	margin-bottom: 1em;
+	margin-left: 2%;
+	font-size: .75em;
+	font-weight: bold;
+	margin-right: 1%;
+}
+
+#register .hidden fieldset {
+	display: none;
+}
+
+#register .visible fieldset {
+	display: block;
+}
+
+#register .hidden {
+	display: none;
+}
+
+#register .icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#register .icon.icon-success {
+  stroke: green;
+}
+
+#register .icon.icon-error {
+  stroke: red;
+}
+
+#register .field-message {
+	color: #320099;
+	font-style: italic;
+	font-weight: 600;
+	padding-top: 0.5em;
+	font-size: 0.9rem;
+	display: inline;
+	visibility: visible;
+}
+
+#register .required {
+	color: #c63800;
+	font-style: italic;
+}
+
+.clearfix {
+	overflow: auto;
+}
+
+.clear {
+	clear: both;
 }
 
 #register option {
@@ -52,56 +157,51 @@ display: none;
 
 /* Validation */
 
-#register .valid input{ color: #080; font-weight: bold; border-color: #080; }
+#register input.valid.success-alert { color: #080; font-weight: bold; border-color: #080; }
 #userlogin .valid input, #user_email .valid input{ border: 1px solid #080; color: #080; }
-#register .error input { color: #800; font-weight: bold; border: 1px solid #800;}
+#register label.error.fail-alert { color: #800; font-weight: bold; border: 1px solid #800;}
 #register .error { color: #800; font-weight: bold; }
-#userlogin .error input, #user_email .error input { border-color: #800;}
+#userlogin .error input, #user_email .error input { border-color: #800!important;}
+.alert-success { color: #080; }
+.alert-danger { color: #800; }
 
-#tick, #cross, #tick2, #cross2 {display:none;}
+#tick, #cross, #tick2, #cross2 {display:none; font-size: .75em;}
 
-#passwordDescription { font-size: 10px; }
-#passwordStrength
-{
-	height:10px;
-	display:block;
-	float:left;
+meter {
+    /* Reset the default appearance */
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;         
+	margin: 1em auto 0;
+	width: 100%;
+	height: .5em;
+    
+    /* Applicable only to Firefox */
+	background: none;
+	background-color: rgba(0,0,0,0.1);
 }
 
-.strength0
-{
-	width:150px;
-	background:#cccccc;
+meter {
+	background: none;
+	background-color: rgba(0,0,0,0.1);
 }
 
-.strength1
-{
-	width:30px;
-	background:#ff0000;
+meter[value="1"] { background: red; }
+meter[value="2"] { background: yellow; }
+meter[value="3"] { background: orange; }
+meter[value="4"] { background: green; }
+
+.feedback {
+	color: #9ab;
+	font-size: 90%;
+	padding: 0 .25em;
+	font-family: "Philosopher", cursive;
+	margin-top: 1em;
 }
 
-.strength2
-{
-	width:50px;	
-	background:#ff5f5f;
-}
-
-.strength3
-{
-	width:80px;
-	background:#56e500;
-}
-
-.strength4
-{
-	background:#4dcd00;
-	width:120px;
-}
-
-.strength5
-{
-	background:#399800;
-	width:150px;
+#password-strength-text {
+	font-size: 80%;
+	display:inline;
 }
 
 /* Profile */
@@ -113,8 +213,8 @@ display: none;
 .error { font-weight: bold; color: #900; }
 #your-profile .description { font-weight: normal !important; font-size: 98%; color: #000; }
 
-#msgbox{
-	font-size: .95em;
+#msgbox, #msgbox2{
+	font-size: .75em;
 	font-weight: bold;
 }
 #msgbox.messagebox {
@@ -143,4 +243,17 @@ display: none;
 	padding:3px;
 	font-weight:bold;
 	color:#CC0000;
+}
+
+.grecaptcha-badge {
+    z-index: 10000;
+}
+
+.forgot_pwd_form {
+	width: 50%;
+	max-width: 600px;
+	margin: 0 auto;
+	border: 1px solid #202020;
+	border-radius: 5px;
+	padding: 1em;
 }
